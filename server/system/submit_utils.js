@@ -27,6 +27,10 @@ const {
 } = require('sawtooth-sdk/protobuf')
 const protos = require('../blockchain/protos')
 
+require('request-debug')(request, function(reqresp, data, r){
+  console.log(reqresp, data)
+})
+
 const FAMILY_NAME = 'supply_chain'
 const FAMILY_VERSION = '1.1'
 const NAMESPACE = '3400de'
