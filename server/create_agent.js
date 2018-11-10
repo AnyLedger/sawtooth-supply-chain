@@ -32,11 +32,19 @@ function create_tx_and_submit() {
 	createTxn = getTxnCreator(privkey, SERVERpubkey)
 	// console.log(createTxn('I have a message'))
 
-	tx = createTxn(privkey, encodeTimestampedPayload({
+	tx = createTxn(encodeTimestampedPayload({
 		action: protos.SCPayload.Action.CREATE_AGENT,
-		create_agent: protos.CreateAgentAction.create({name: 'FUCKER', public_key: pubkey}),
+		createAgent: protos.CreateAgentAction.create({name: 'FUCKER'}),
 	}))
 
-	submitTxns([tx])
-	// awaitServerPubkey()
+	// All Transactions must be submitted in a batch, even if you just have one TX. Hence TransactionList.
+	// https://sawtooth.hyperledger.org/docs/core/releases/latest/_autogen/sdk_submit_tutorial_python.html#building-the-batch
+	transactions = [tx]
+	request({
+		method: 'POST',
+		url: `${SERVER}/transactions?wait`,
+		headers: { 'Content-Type': 'application/octet-stream' },
+		encoding: null,
+		body: TransactionList.encode({ transactions }).finish()
+	 })
 }
