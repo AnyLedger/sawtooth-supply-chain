@@ -143,7 +143,6 @@ const makeUpdateSubmitter = (count = 0) => () => {
           if (update.noOpChance && Math.random() < update.noOpChance) return
           const oldValue = oldValues[group.recordId][update.name]
           const prop = updateProperty(update, oldValue)
-          console.log(oldValue, "------- was updated to ----------->", prop)
           updateTxns.push(createUpdate(group.privateKey, group.recordId, prop))
         })
         return updateTxns
@@ -152,7 +151,6 @@ const makeUpdateSubmitter = (count = 0) => () => {
 
     // Send update transactions
     .then(updateTxns => {
-      console.log("Updated Transactions", updateTxns)
       console.log(`Submitting ${updateTxns.length} update transactions . . .`)
       submitTxns(updateTxns)
     })
@@ -170,8 +168,8 @@ protos.compile()
   .then(awaitServerPubkey)
   .then(batcherPublicKey => {
     const txnCreators = {}
+
     createTxn = (privateKey, payload) => {
-      console.log("privateKey", privateKey, "payload", payload)
       if (!txnCreators[privateKey]) {
         txnCreators[privateKey] = getTxnCreator(privateKey, batcherPublicKey)
       }
