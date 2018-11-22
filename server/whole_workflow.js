@@ -17,19 +17,25 @@ const agents = require('./agents.json')
 const SERVER = 'http://localhost:8020'
 const SERVERpubkey = '034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa'
 
-function post_transactions(server_url, transactions){
+async function post_transactions(server_url, transactions, comment){
 	// All Transactions must be submitted in a batch, even if you just have one TX. Hence TransactionList.
 	// https://sawtooth.hyperledger.org/docs/core/releases/latest/_autogen/sdk_submit_tutorial_python.html#building-the-batch
-	request({
-		method: 'POST',
-		url: `${server_url}/transactions?wait`,
-		headers: { 'Content-Type': 'application/octet-stream' },
-		encoding: null,
-		body: TransactionList.encode({ transactions }).finish()
-	 })
+	try {
+		await request({
+				method: 'POST',
+				url: `${server_url}/transactions?wait`,
+				headers: { 'Content-Type': 'application/octet-stream' },
+				encoding: null,
+				body: TransactionList.encode({ transactions }).finish()
+			 })
+		console.log(comment, "ok")
+	}
+	catch (err) {
+	 	console.log(comment, err.statusCode)
+	}
 }
 
-function create_tx(name, keypair) {
+function create_agent(name, keypair) {
 	// getTxnCreator() is a factory. It returns a convenience function that:
 	// 1. Encodes the transaction header for you
 	// 2. Signs the header for you
@@ -95,23 +101,37 @@ function agent_accepts_proposal_to_be_reporter_for(record_id, agents_keypair){
 	return [tx]
 }
 
+function update_record(record_id, reporter_keypair, property){
+	createTxn = getTxnCreator(reporter_keypair.privkey, SERVERpubkey)
+	tx = createTxn(encodeTimestampedPayload({
+		action: protos.SCPayload.Action.UPDATE_PROPERTIES,
+		updateProperties: protos.UpdatePropertiesAction.create({
+			recordId: record_id,
+			properties: [protos.PropertyValue.create(property)]
+		})
+	}))
+	return [tx]
+}
+
 // Create the agents defined in agents.json
 protos.compile()
-	.then(function(){
-			transactions = []
-			for (name in agents){
-				transactions.push(create_tx(name, agents[name]))
-			}
-			post_transactions(SERVER, transactions)
+	.then(async function(){
+		transactions = []
+		for (name in agents){
+			transactions.push(create_agent(name, agents[name]))
 		}
-	)
-	.then(function(){
+		await post_transactions(SERVER, transactions, "Creating Agents Huayin Pharma, Jozef, TU Berlin")
+
 		txs = create_record("sillyfish", agents["Huayin Pharmaceutical"])
-		post_transactions(SERVER, txs)
-	})
-	.then(function(){
+		await post_transactions(SERVER, txs, "Huayin Pharma creates a Record sillyfish")
+
 		txs = propose_that_an_agent_is_a_reporter_for("sillyfish", agents["Huayin Pharmaceutical"], agents["Jozef's IoT Device"].pubkey)
-		post_transactions(SERVER, txs)
+		await post_transactions(SERVER, txs, "Huayin Pharma proposes that Jozef's IoT Device is a reporter for sillyfish")
+
 		txs = agent_accepts_proposal_to_be_reporter_for("sillyfish", agents["Jozef's IoT Device"])
-		post_transactions(SERVER, txs)
+		await post_transactions(SERVER, txs, "Jozef's IoT Device accepts the Proposal to become a reporter")
+
+		property = {name: "temperature", dataType: 3, numberValue: 44915058}
+		txs = update_record("sillyfish", agents["Jozef's IoT Device"], property)
+		await post_transactions(SERVER, txs, "Jozef's IoT Device updates a Property on sillyfish")
 	})

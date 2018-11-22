@@ -1,5 +1,14 @@
 {
-	"Huayin Pharmaceutical": {"privkey": "72e7773d9d27e1838e2172e029e9f645312b9dda1e86a051e105f24e03f82636", "pubkey": "02be197837095f796638bc3cbfd82dc4879cc25dca48225941c61b5eada0503461"},
-	"TU Berlin": {"privkey": "4a8195231077bc3ad3c5e2c921eedef9f07edc829ca1966d6c0579299d867960", "pubkey": "03ec8db0e33dfa2fb4db5ef3caf31899143913b69007980fc5e377729a52d28d2d"},
-	"Jozef's IoT Device": {"privkey": "0d641308facb799b08a59287815bfaf54318f2657905ede1291c9b2d3a1bded3", "pubkey": "034946bd1e9b4a62101f734670bcea62b708fef7e25a7d6190a6cb58cea2badd3f"}
+  "Huayin Pharmaceutical": {
+    "privkey": "72e7773d9d27e1838e2172e029e9f645312b9dda1e86a051e105f24e03f82636",
+    "pubkey": "02be197837095f796638bc3cbfd82dc4879cc25dca48225941c61b5eada0503461"
+  },
+  "TU Berlin": {
+    "privkey": "4a8195231077bc3ad3c5e2c921eedef9f07edc829ca1966d6c0579299d867960",
+    "pubkey": "03ec8db0e33dfa2fb4db5ef3caf31899143913b69007980fc5e377729a52d28d2d"
+  },
+  "Jozef's IoT Device": {
+    "privkey": "0d641308facb799b08a59287815bfaf54318f2657905ede1291c9b2d3a1bded3",
+    "pubkey": "034946bd1e9b4a62101f734670bcea62b708fef7e25a7d6190a6cb58cea2badd3f"
+  }
 }
